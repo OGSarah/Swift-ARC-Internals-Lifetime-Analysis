@@ -4,7 +4,7 @@ import PlaygroundSupport
 /// Keeps the playground process alive, but it does not affect ARC behavior.
 PlaygroundPage.current.needsIndefiniteExecution = true
 
-/// Module 1 - Build a Lifetime Logger
+/// # Module 1: Lifetime Logging Foundation
 /// Goal: See object allocation and deallocation clearly.
 
 /// Base class
@@ -32,7 +32,7 @@ var object: TrackedObject? = TrackedObject(id: "A")
 /// `deinit` runs right away when the references drop to zero
 object = nil
 
-/// Module 2: Manual Retain Graph Thinking
+/// # Module 2: Retain Cycles & Object Graphs
 /// Goal: Understand how reference counts change
 
 /// Build a small object graph
@@ -73,3 +73,29 @@ rachel = nil
 /// - `deinit` never runs
 /// - Memory is never freed
 /// - You have a memory leak
+
+/// # Module 3: Closure Capture Deep Dive
+///  Goal: Understand closure memory semantics
+
+/// Basic case
+class ClosureHolder: TrackedObject {
+    var action: (() -> Void)?
+
+    func setup() {
+        action = {
+            print("Action from", self.id)
+        }
+    }
+}
+
+/// Test
+/// /// `holder` strongly owns `action
+/// `action` closure strongly captures `self`
+var holder: ClosureHolder? = ClosureHolder(id: "Holder")
+holder?.setup()
+
+/// `holder` still has 1 strong reference from the closure.
+holder = nil
+/// So the reference count never reaches 0
+/// `deinit` never runs
+/// This is a memory leak.
