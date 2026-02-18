@@ -93,6 +93,29 @@ So conceptually you can think:
 weakTable[ObjectID] = {&rachel.owner, &someOtherWeakVar, ...}
 ```
 
+### How is "zeroing weak" implemented?
+"Zeroing" means: when the object dies, all weak refs that pointed to it are automatically set to nil.
+
+Mechanism:
+1. When you assign to a weak variable/property:
+   - runtime registers that storage location (the address of the weak slot) in the weak table entry for that object.
+2. When the object is about to deinitialize/deallocate:
+   - runtime looks up the object in the weak table
+   - iterates every registered weak-slot address
+   - writes `nil` to each one of these slots
+   - removes the weak table entry for that object
+
+That's why, in the example, after:
+```swift
+rachel?.owner = sarah
+sarah = nil
+```
+`rachel.owner` doesn't become a dangling pointer. When `sarah` deallocates, the runtime proactively writes `nil` into `rachel.owner`
+
+How this relates to Module 2 in the playground:
+- With `var owner: Person?` (strong), you create a strong cycle and neither refcount reach 0 -> no `deninit`.
+- With `weak var owner: Person?`, the back-edge does not increment Sarah's strong refcount, so you when you set external refs to nil, both can reach 0 and deallocate.
+- If you used `unowned var owner: Person`, you'd avoid the cycle too, but if `Pet` outlives `Person`, accessing `owner` would crash.
 
 ## 3. Closure Capture Semantics
 
