@@ -24,7 +24,7 @@ At Staff level, engineers must:
 
 # Project Structure
 
-## 1. Lifetime Logging Foundation
+## Module 1. Lifetime Logging Foundation
 A `TrackedObject` base class logs `init` and `deinit` events, making object lifetimes observable.
 
 Concepts explored:
@@ -38,7 +38,7 @@ Traditional GC is non-deterministic, meaning objects are cleared "whenever the c
 
 ARC does not use a background thread to scan memory. The code to increment or decrement counts is inserted by the compiler at compile time.
 
-## 2. Retain Cycles & Object Graphs
+## Module 2. Retain Cycles & Object Graphs
 Builds a bidirectional relationship between objects(e.g., `Person` and `Pet`) to intentionally create retain cycles.
 
 Concepts explored:
@@ -117,8 +117,8 @@ How this relates to Module 2 in the playground:
 - With `weak var owner: Person?`, the back-edge does not increment Sarah's strong refcount, so you when you set external refs to nil, both can reach 0 and deallocate.
 - If you used `unowned var owner: Person`, you'd avoid the cycle too, but if `Pet` outlives `Person`, accessing `owner` would crash.
 
-## 3. Closure Capture Semantics
+## Module 3. Closure Capture Semantics
 
-## 4. Async Lifetime Extension
+## Module 4. Async Lifetime Extension
 
-## 5. Mini Retain Graph Inspector
+## Module 5. Mini Retain Graph Inspector
