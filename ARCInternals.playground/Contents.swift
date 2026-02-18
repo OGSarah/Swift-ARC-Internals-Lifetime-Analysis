@@ -7,7 +7,7 @@ PlaygroundPage.current.needsIndefiniteExecution = true
 /// Module 1 - Build a Lifetime Logger
 /// Goal: See object allocation and deallocation clearly.
 
-// Base class
+/// Base class
 class TrackedObject {
     let id: String
 
@@ -22,13 +22,51 @@ class TrackedObject {
 
 }
 
-// A new `TrackedObject` is created.
-// It's reference count becomes 1 (held by `object`)
+/// A new `TrackedObject` is created.
+/// It's reference count becomes 1 (held by `object`)
 var object: TrackedObject? = TrackedObject(id: "A")
 
-// The strong reference is removed.
-// Reference count becomes 0.
-// ARC immediately deallocates the instance.
-// `deinit` runs right away when the references drop to zero
+/// The strong reference is removed.
+/// Reference count becomes 0.
+/// ARC immediately deallocates the instance.
+/// `deinit` runs right away when the references drop to zero
 object = nil
 
+/// Module 2: Manual Retain Graph Thinking
+/// Goal: Understand how reference counts change
+
+/// Build a small object graph
+class Person: TrackedObject {
+    var pet: Pet?
+}
+
+class Pet: TrackedObject {
+    var owner: Person?
+}
+
+/// Reference counts are now `Sarah -> 1`, `Rachel -> 1`
+var sarah: Person? = Person(id: "Sarah")
+var rachel: Pet? = Pet(id: "Rachel")
+
+
+/// Link them
+/// Now `sarah.pet` strongly references `rachel`.
+/// `rachel.owner` strongly references `sarah`
+/// Now the reference count becomes:
+/// `Sarah` total 2, 1 from `sarah`, 1 from`rachel.owner`
+/// `Rachel` total 2, 1 from `rachel`, 1 from `sarah.pet`
+
+sarah?.pet = rachel
+rachel?.owner = sarah
+
+/// Remove external references.
+/// After `sarah = nil`, `Sarah` loses 1 reference, still has 1 reference from `rachel.owner`
+/// After `rachel = nil`, `Rachel` loses 1 reference, still has 1 reference from `sarah.pet`
+sarah = nil
+rachel = nil
+
+/// They are holding each other alive
+/// Since neither reaches zero:
+/// - `deinit` never runs
+/// - Memory is never freed
+/// - You have a memory leak
