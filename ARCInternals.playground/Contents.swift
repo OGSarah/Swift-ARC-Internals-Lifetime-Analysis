@@ -41,7 +41,11 @@ class Person: TrackedObject {
 }
 
 class Pet: TrackedObject {
-    var owner: Person?
+
+    /// Fix for strong reference
+    /// Now you will see deinit printed in the debug console for both `Sarah` and `Rachel`
+    weak var owner: Person?
+    // var owner: Person?
 }
 
 /// Reference counts are now `Sarah -> 1`, `Rachel -> 1`
