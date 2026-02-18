@@ -14,6 +14,9 @@ Rather than relying on Instruments or tooling, this playground is designed to bu
 
 The goal is to reason about memory deterministically, like the compiler and the runtime do.
 
+### What is a memory leak?
+A resource leak that occurs when a computer program incorrectly manages memory allocations, failing to release memory that is no longer needed back to the operating system.
+
 # Why this Project Exists
 At Staff level, engineers must:
 - Predict object lifetimes without trial-and-error-debugging
