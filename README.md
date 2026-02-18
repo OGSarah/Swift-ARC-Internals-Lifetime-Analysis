@@ -17,6 +17,9 @@ The goal is to reason about memory deterministically, like the compiler and the 
 ### What is a memory leak?
 A resource leak that occurs when a computer program incorrectly manages memory allocations, failing to release memory that is no longer needed back to the operating system.
 
+### What is a dangling pointer?
+A pointer that holds the memory address of an object that has already been deleted or deallocated.
+
 # Why this Project Exists
 At Staff level, engineers must:
 - Predict object lifetimes without trial-and-error-debugging
