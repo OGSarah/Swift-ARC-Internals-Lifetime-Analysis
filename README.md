@@ -79,7 +79,7 @@ then after `Person` dellocates, `owner` would have to contain a value that is no
 
 So Swift forces `weak` to be:
 - `Optional`(`Person?`), because it needs a legal "no value" state, or
-- `unowned` (non-optional) *only if you promise it will always be valid while accessed (otherwise app will crash).
+- `unowned` (non-optional) only if you promise it will always be valid while accessed (otherwise app will crash).
 
 That's the rule of thumb:
 - **weak**: can become nil -> must be optional
