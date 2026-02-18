@@ -117,7 +117,7 @@ How this relates to Module 2 in the playground:
 - With `weak var owner: Person?`, the back-edge does not increment Sarah's strong refcount, so you when you set external refs to nil, both can reach 0 and deallocate.
 - If you used `unowned var owner: Person`, you'd avoid the cycle too, but if `Pet` outlives `Person`, accessing `owner` would crash.
 
-## Module 3. Closure Capture Semantics
+## Module 3. Closure Capture Deep Dive
 
 ## Module 4. Async Lifetime Extension
 
