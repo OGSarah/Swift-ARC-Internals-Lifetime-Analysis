@@ -1,7 +1,7 @@
 import Foundation
 import PlaygroundSupport
 
-// Keeps the playground process alive, but it does not affect ARC behavior.
+/// Keeps the playground process alive, but it does not affect ARC behavior.
 PlaygroundPage.current.needsIndefiniteExecution = true
 
 /// Module 1 - Build a Lifetime Logger
@@ -51,7 +51,6 @@ class Pet: TrackedObject {
 /// Reference counts are now `Sarah -> 1`, `Rachel -> 1`
 var sarah: Person? = Person(id: "Sarah")
 var rachel: Pet? = Pet(id: "Rachel")
-
 
 /// Link them
 /// Now `sarah.pet` strongly references `rachel`.
