@@ -39,6 +39,13 @@ Traditional GC is non-deterministic, meaning objects are cleared "whenever the c
 ARC does not use a background thread to scan memory. The code to increment or decrement counts is inserted by the compiler at compile time.
 
 ## 2. Retain Cycles & Object Graphs
+Builds a bidirectional relationship between objects(e.g., `Person` and `Pet`) to intentionally create retain cycles.
+
+Concepts explored:
+- Strong reference cycles
+- Why ARC does not detect cycles
+- Weak reference semantics
+- Zeroing weak implementation behavior
 
 ## 3. Closure Capture Semantics
 
