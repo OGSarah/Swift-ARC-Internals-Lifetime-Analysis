@@ -32,6 +32,12 @@ Concepts explored:
 - ARC behavior under reference changes
 - When exactly is `deinit` is invoked
 
+### What is deterministic deallocation? 
+Unlike languages with a garbage collector (e.g., Java, Python, C#), Swift deallocates an object immediately when it's last reference is gone.
+Traditional GC is non-deterministic, meaning objects are cleared "whenever the collection runs".
+
+ARC does not use a background thread to scan memory. The code to increment or decrement counts is inserted by the compiler at compile time.
+
 ## 2. Retain Cycles & Object Graphs
 
 ## 3. Closure Capture Semantics
