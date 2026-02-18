@@ -47,6 +47,40 @@ Concepts explored:
 - Weak reference semantics
 - Zeroing weak implementation behavior
 
+### Why doesn't ARC detect cycles?
+Because ARC is local and mechanical: it only knows "how many strong references point to this object right now?"
+- ARC increments/decrements a reference count on each object as strong references are created/destroyed.
+- Deallocation happens only when the count reaches 0.
+- A cycle means each object in the cycle still has at least 1 strong reference (from within the cycle), so none ever hits zero.
+
+Detecting cycles would require ARC to do graph analysis (tracing the object graph to see if a subgraph is unreachable from "roots").
+That's what a tracing GC does. ARC intentionally avoids that because it:
+- Would add runtime overhead and pauses
+- Would require tracking "roots" (stack/global references) and scanning memory
+- Complicates deterministic deinit timing (one of ARC's big wins)
+
+So in the `Person <-> Pet` example, ARC is behaving exactly as designed: both refcounts never reach zero, so neither deallocates.
+
+### Why is weak optional?
+Because a weak reference can become nil at any time when the referenced object deallocates.
+
+If Swift allowed:
+
+```swift
+weak var owner: Person // non-optional
+```
+then after `Person` dellocates, `owner` would have to contain a value that is not a valid object anymore. That would be unsafe.
+
+So Swift forces `weak` to be:
+- `Optional`(`Person?`), because it needs a legal "no value" state, or
+- `unowned` (non-optional) *only if you promise it will always be valid while accessed (otherwise app will crash).
+
+That's the rule of thumb:
+- **weak**: can become nil -> must be optional
+- **unowned**: won't become nil (assumed) -> can be non-optional, but unsafe if assumption is wrong
+
+### What runtime data structure tracks weak references?
+
 ## 3. Closure Capture Semantics
 
 ## 4. Async Lifetime Extension
