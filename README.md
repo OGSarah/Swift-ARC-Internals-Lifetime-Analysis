@@ -80,6 +80,19 @@ That's the rule of thumb:
 - **unowned**: won't become nil (assumed) -> can be non-optional, but unsafe if assumption is wrong
 
 ### What runtime data structure tracks weak references?
+At runtime, Swift uses a side table mechanism to track refcounts and weak refs.
+Conceptionally there are two buckets:
+1. **Inline Refcounting**(fast path): stored in the object header/isa metadata when possible.
+2. **Side table entries**(slow path): allocated when the runtime needs extra bookkeeping.
+
+Weak references are tracked in a **weak reference table** (a hash table keyed by the object identity) that stores the set of "weak locations" (addresses of variables/properties)
+that currently point to that object.
+
+So conceptually you can think:
+```swift
+weakTable[ObjectID] = {&rachel.owner, &someOtherWeakVar, ...}
+```
+
 
 ## 3. Closure Capture Semantics
 
