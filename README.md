@@ -124,6 +124,14 @@ How this relates to Module 2 in the playground:
 - If you used `unowned var owner: Person`, you'd avoid the cycle too, but if `Pet` outlives `Person`, accessing `owner` would crash.
 
 ## Module 3: Closure Capture Deep Dive
+Demonstrates how closures capture `self` and why escaping closures commonly create retain cycles.
+
+Concepts explored:
+- Escaping vs non-escaping closures
+- `[weak self]` vs `[unowned self]`
+- Crash behavior of unowned
+- Performance tradeoffs
+- Capture list mechanics
 
 ## Module 4: Async Lifetime Extension
 
