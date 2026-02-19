@@ -77,8 +77,8 @@ rachel = nil
 /// # Module 3: Closure Capture Deep Dive
 ///  Goal: Understand closure memory semantics
 
-/// Basic case
-class ClosureHolder: TrackedObject {
+/// Basic case with memory leak
+/* class ClosureHolder: TrackedObject {
     var action: (() -> Void)?
 
     func setup() {
@@ -99,3 +99,47 @@ holder = nil
 /// So the reference count never reaches 0
 /// `deinit` never runs
 /// This is a memory leak.
+*/
+
+/*
+/// Fixed without memory leak
+/// Now:
+///  Closure holds `self` weakly
+///  No retain cycle
+///  `deinit` runs correctly
+class ClosureHolder: TrackedObject {
+    var action: (() -> Void)?
+
+    func setup() {
+        action = { [weak self] in
+            guard let self else { return }
+            print("Action from", self.id)
+        }
+    }
+}
+
+/// Test fix
+var holder: ClosureHolder? = ClosureHolder(id: "Holder")
+holder?.setup()
+holder = nil
+*/
+
+/// Intentional crash with `unowned self`
+class ClosureHolder: TrackedObject {
+    var action: (() -> Void)?
+
+    func setup() {
+        action = { [unowned self] in
+            print("Action from", self.id)
+        }
+    }
+}
+
+/// Test
+var holder: ClosureHolder? = ClosureHolder(id: "Holder")
+holder?.setup()
+
+let savedAction = holder?.action
+holder = nil /// deallocates `Holder`
+savedAction?() /// Crashes here with `Fatal error: Attempted to read an unowned reference but object 0x600000c36400 was already deallocated`
+
