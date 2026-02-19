@@ -125,7 +125,7 @@ holder = nil
 */
 
 /// Intentional crash with `unowned self`
-class ClosureHolder: TrackedObject {
+/*class ClosureHolder: TrackedObject {
     var action: (() -> Void)?
 
     func setup() {
@@ -142,4 +142,4 @@ holder?.setup()
 let savedAction = holder?.action
 holder = nil /// deallocates `Holder`
 savedAction?() /// Crashes here with `Fatal error: Attempted to read an unowned reference but object 0x600000c36400 was already deallocated`
-
+*/
