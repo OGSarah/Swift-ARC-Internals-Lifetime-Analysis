@@ -17,6 +17,24 @@ The goal is to reason about memory deterministically, like the compiler and the 
 ## Important Definitions:
 - **memory leak** - A resource leak that occurs when a computer program incorrectly manages memory allocations, failing to release memory that is no longer needed back to the operating system.
 - **dangling pointer** - A pointer that holds the memory address of an object that has already been deleted or deallocated.
+- **runtime trap** - An intentional, unrecoverable crash triggered by the Swift runtime when the program violates a safety requirement. Unlike standard errors (like `Error` protocols), a trap
+  cannot be caught or recovered from. It stops the program immediately to prevent data corruption or further undefined behavior.
+- **atomic bookkeeping** - Ensure that a lock (or low-level CPU instruction) is used behind the scenes to guarantee that only one thread accesses the data at a time. By default, properties in swift
+  are not atomic. Because atomic operations involve locks, they are slower than non-atomic operations.
+- **Swift Intermediate Language(SIL)** The middle layer between your Swift source code and the final machine code.
+
+Think of compilation like this:
+```swift
+Swift source code
+        ↓
+AST (Abstract Syntax Tree)
+        ↓
+SIL  ← 👈 this is where ARC & ownership are explicit
+        ↓
+LLVM IR
+        ↓
+Machine code
+```
 
 # Why this Project Exists
 At Staff level, engineers must:
@@ -130,6 +148,64 @@ Concepts explored:
 - Crash behavior of unowned
 - Performance tradeoffs
 - Capture list mechanics
+
+### Why doesn't `weak` crash?
+
+If you use `[weak self]` then:
+- `weak` becomes `nil` automatically when object deallocates
+- It is stored in a special zeroing weak table
+- The closure safely sees `self == nil`
+
+So it does:
+```swift
+weak -> optional -> zeroed out
+unowned -> assumed alive -> crashes if its not alive
+```
+
+### Why does `unowned` crash in the "Intentional crash with unowned self section" of the playground?
+Because `unowned` is a non-optional reference that does NOT retain and is assumed to always be valid.
+
+`unowned` does NOT:
+- Increase retain count
+- Zero itself out like `weak`.
+
+So after:
+```swift
+holder = nil
+```
+The object is deallocated but the closure still holds a raw pointer in memory.
+
+When you call:
+```swift
+savedAction?()
+```
+Swift tries to dereference a pointer to freed memory. Swift detects this and triggers a runtime trap.
+
+### Why is `unowned` faster?
+Because `weak` is expensive.
+
+Weak reference requires:
+- Registration in a global weak reference table
+- Atomic bookkeeping
+- Zeroing when object deallocates
+- Optional unwrapping
+- Thread-safe Updates
+
+Unowned requires:
+- Just a direct pointer
+- no zeroing
+- no weak table
+- no atomic operations
+
+`Unowned` is basically a raw, no-retaining pointer with a runtime validity check.
+
+### When should you use `unowned`?
+
+Use `unowned` only when:
+- The captured object must outlive the closure
+- There is a guaranteed ownership hierarchy
+- You want performance
+- You want to avoid optionals
 
 ## Module 4: Async Lifetime Extension
 
