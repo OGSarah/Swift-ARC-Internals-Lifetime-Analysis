@@ -19,9 +19,9 @@ The goal is to reason about memory deterministically, like the compiler and the 
 - **dangling pointer** - A pointer that holds the memory address of an object that has already been deleted or deallocated.
 - **runtime trap** - An intentional, unrecoverable crash triggered by the Swift runtime when the program violates a safety requirement. Unlike standard errors (like `Error` protocols), a trap
   cannot be caught or recovered from. It stops the program immediately to prevent data corruption or further undefined behavior.
-- **atomic bookkeeping** - Ensure that a lock (or low-level CPU instruction) is used behind the scenes to guarantee that only one thread accesses the data at a time. By default, properties in swift
+- **atomic bookkeeping** - Ensures that a lock (or low-level CPU instruction) is used behind the scenes to guarantee that only one thread accesses the data at a time. By default, properties in swift
   are not atomic. Because atomic operations involve locks, they are slower than non-atomic operations.
-- **Swift Intermediate Language(SIL)** The middle layer between your Swift source code and the final machine code.
+- **Swift Intermediate Language(SIL)** - The middle layer between your Swift source code and the final machine code.
 
 Think of compilation like this:
 ```swift
