@@ -208,5 +208,12 @@ Use `unowned` only when:
 - You want to avoid optionals
 
 ## Module 4: Async Lifetime Extension
+Introduces asynchronous dispatch and explores how escaping work extends object life.
+
+Concepts explored:
+- Lifetime extension during async work
+- Dispatch Queue capture behavior
+- Structured concurrency implications
+- Deterministic vs delayed deallocation
 
 ## Module 5: Mini Retain Graph Inspector
