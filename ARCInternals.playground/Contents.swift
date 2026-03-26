@@ -146,3 +146,27 @@ savedAction?() /// Crashes here with `Fatal error: Attempted to read an unowned 
 
 /// Module 4: Async Lifetime Traps
 /// Goal: Understand lifetime extension in async contexts.
+
+/// Case 1: Strong Capture in DispatchQueue - lifetime extension
+class AsyncWorker: TrackedObject, @unchecked Sendable {
+    func startWork() {
+        /// The closure strongly captures `self.
+        /// Even if the external `worker` reference is set to nil, the DispatchQueue holds a strong reference to `self` until the block finishes.
+        /// ARC will NOT deallocate the object until the queued block completes.
+        DispatchQueue.global().asyncAfter(deadline: .now() + 2) {
+            print("Working from:", self.id)
+            /// `self` is alive here because the closure retains it.
+            /// `deinit` will run AFTER this block executes, not when `worker = nil` is called.
+        }
+    }
+}
+
+print("\n--- Module 4: Async Lifetime Extension ---")
+var worker: AsyncWorker? = AsyncWorker(id: "Worker-A")
+worker?.startWork()
+
+/// This does NOT immediately deallocate Worker-A.
+/// The DispatchQueue block still holds a strong reference.
+/// deinit will run ~2 seconds later, after the block finishes.
+worker = nil
+print("worker = nil - but Worker-A is still alive (retained by queue block)")
